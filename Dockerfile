@@ -1,9 +1,10 @@
 ﻿FROM centos
 LABEL maintainer "Yang Cheng"
-ENV PHP_VERSION php-7.2.3
+ENV PHP_VERSION php-7.2.5
 ENV REDIS_VERSION redis-3.1.5
-ENV SWOOLE_VERSION swoole-2.1.0
+ENV SWOOLE_VERSION swoole-4.0.2
 ENV MONGODB_VERSION mongodb-1.3.4
+ENV FREETYPE_VERSION freetype-2.9
 
 # init
 WORKDIR /root
@@ -18,17 +19,32 @@ RUN ./configure --prefix=/usr/local/"${PHP_VERSION}" --with-mysql-sock=/var/run/
 
 RUN cp php.ini-development /usr/local/"${PHP_VERSION}"/etc/php.ini && cp /usr/local/"${PHP_VERSION}"/etc/php-fpm.conf.default /usr/local/"${PHP_VERSION}"/etc/php-fpm.conf && cp /usr/local/"${PHP_VERSION}"/etc/php-fpm.d/www.conf.default /usr/local/"${PHP_VERSION}"/etc/php-fpm.d/www.conf
 RUN ln -s /usr/local/"${PHP_VERSION}"/bin/phpize /usr/bin && ln -s /usr/local/"${PHP_VERSION}"/bin/php /usr/bin && ln -s /usr/local/"${PHP_VERSION}"/bin/php-config /usr/bin
-#还需加入将php-fpm写入systemctl管理
+
+#install freetype-2.9 and gd
+
+#install freetype
+WORKDIR /root
+RUN wget https://download.savannah.gnu.org/releases/freetype/"${FREETYPE_VERSION}".tar.gz && tar -zxvf "${FREETYPE_VERSION}".tar.gz
+WORKDIR /"${FREETYPE_VERSION}"
+RUN ./configure --prefix=/usr/local/"${FREETYPE_VERSION}" && make && make install
+
+#install gd
+WORKDIR /"${PHP_VERSION}"/ext/gd
+RUN phpize && ./configure --with-freetype-dir=/usr/local/"${FREETYPE_VERSION}" && make && make install && echo "extension=gd.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+
+# install php-redis
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${REDIS_VERSION}".tgz && tar -zxvf "${REDIS_VERSION}".tgz
 WORKDIR /root/"${REDIS_VERSION}"
 RUN phpize && ./configure && make && make install && echo "extension=redis.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
+# install php-swoole
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${SWOOLE_VERSION}".tgz && tar -zxvf "${SWOOLE_VERSION}".tgz
 WORKDIR /root/"${SWOOLE_VERSION}"
 RUN phpize && ./configure && make && make install && echo "extension=swoole.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
+#install php-mongodb
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGODB_VERSION}".tgz
 WORKDIR /root/"${MONGODB_VERSION}"
