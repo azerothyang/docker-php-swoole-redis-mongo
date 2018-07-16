@@ -26,29 +26,29 @@ RUN ln -s /usr/local/"${PHP_VERSION}"/bin/phpize /usr/bin && ln -s /usr/local/"$
 WORKDIR /root
 RUN wget https://download.savannah.gnu.org/releases/freetype/"${FREETYPE_VERSION}".tar.gz && tar -zxvf "${FREETYPE_VERSION}".tar.gz
 WORKDIR /"${FREETYPE_VERSION}"
-RUN ./configure --prefix=/usr/local/"${FREETYPE_VERSION}" && make && make install
+RUN sh configure --prefix=/usr/local/"${FREETYPE_VERSION}" && make && make install
 
 #install gd
 WORKDIR /"${PHP_VERSION}"/ext/gd
-RUN phpize && ./configure --with-freetype-dir=/usr/local/"${FREETYPE_VERSION}" && make && make install && echo "extension=gd.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+RUN phpize && sh configure --with-freetype-dir=/usr/local/"${FREETYPE_VERSION}" && make && make install && echo "extension=gd.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
 # install php-redis
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${REDIS_VERSION}".tgz && tar -zxvf "${REDIS_VERSION}".tgz
 WORKDIR /root/"${REDIS_VERSION}"
-RUN phpize && ./configure && make && make install && echo "extension=redis.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+RUN phpize && sh configure && make && make install && echo "extension=redis.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
 # install php-swoole
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${SWOOLE_VERSION}".tgz && tar -zxvf "${SWOOLE_VERSION}".tgz
 WORKDIR /root/"${SWOOLE_VERSION}"
-RUN phpize && ./configure && make && make install && echo "extension=swoole.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+RUN phpize && sh configure && make && make install && echo "extension=swoole.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
 #install php-mongodb
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGODB_VERSION}".tgz
 WORKDIR /root/"${MONGODB_VERSION}"
-RUN phpize && ./configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+RUN phpize && sh configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
 WORKDIR /root
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
