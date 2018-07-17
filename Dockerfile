@@ -8,14 +8,12 @@ ENV FREETYPE_VERSION freetype-2.9
 
 # init
 WORKDIR /root
-RUN yum install -y vim wget
+RUN yum -y install vim wget git gcc glibc-headers gcc-c++ libmcrypt libmcrypt-devel autoconf freetype gd jpegsrc libmcrypt libpng libpng-devel libjpeg libxml2 libxml2-devel zlib curl curl-devel openssl*
 RUN wget http://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm && rpm -ivh epel-release-latest-7.noarch.rpm && yum clean all && yum -y update
-RUN yum -y install gcc libmcrypt libmcrypt-devel autoconf freetype gd jpegsrc libmcrypt libpng libpng-devel libjpeg libxml2 libxml2-devel zlib curl curl-devel openssl*
-
 #donwload php and install php
 RUN wget http://cn2.php.net/distributions/"${PHP_VERSION}".tar.gz && tar -zxvf "${PHP_VERSION}".tar.gz
 WORKDIR /root/"${PHP_VERSION}"
-RUN ./configure --prefix=/usr/local/"${PHP_VERSION}" --with-mysql-sock=/var/run/mysql/mysql.sock --with-mhash --with-openssl --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-gd --with-iconv --with-zlib --enable-zip --enable-inline-optimization --disable-fileinfo --enable-shared --enable-bcmath --enable-shmop --enable-sysvsem --enable-mbregex --enable-mbstring --enable-ftp --enable-pcntl --enable-sockets --with-xmlrpc --enable-soap --with-gettext --enable-session --with-curl --enable-opcache --enable-fpm --with-config-file-path=/usr/local/"${PHP_VERSION}"/etc/ && make && make install
+RUN ./configure --prefix=/usr/local/"${PHP_VERSION}" --with-mysql-sock=/var/run/mysql/mysql.sock --with-mhash --with-openssl --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-iconv --with-zlib --enable-zip --enable-inline-optimization --disable-fileinfo --enable-shared --enable-bcmath --enable-shmop --enable-sysvsem --enable-mbregex --enable-mbstring --enable-ftp --enable-pcntl --enable-sockets --with-xmlrpc --enable-soap --with-gettext --enable-session --with-curl --enable-opcache --enable-fpm --with-config-file-path=/usr/local/"${PHP_VERSION}"/etc/ && make && make install
 
 RUN cp php.ini-development /usr/local/"${PHP_VERSION}"/etc/php.ini && cp /usr/local/"${PHP_VERSION}"/etc/php-fpm.conf.default /usr/local/"${PHP_VERSION}"/etc/php-fpm.conf && cp /usr/local/"${PHP_VERSION}"/etc/php-fpm.d/www.conf.default /usr/local/"${PHP_VERSION}"/etc/php-fpm.d/www.conf
 RUN ln -s /usr/local/"${PHP_VERSION}"/bin/phpize /usr/bin && ln -s /usr/local/"${PHP_VERSION}"/bin/php /usr/bin && ln -s /usr/local/"${PHP_VERSION}"/bin/php-config /usr/bin
@@ -25,11 +23,11 @@ RUN ln -s /usr/local/"${PHP_VERSION}"/bin/phpize /usr/bin && ln -s /usr/local/"$
 #install freetype
 WORKDIR /root
 RUN wget https://download.savannah.gnu.org/releases/freetype/"${FREETYPE_VERSION}".tar.gz && tar -zxvf "${FREETYPE_VERSION}".tar.gz
-WORKDIR /"${FREETYPE_VERSION}"
-RUN sh configure --prefix=/usr/local/"${FREETYPE_VERSION}" && make && make install
+WORKDIR /root/"${FREETYPE_VERSION}"
+RUN sh configure --prefix=/usr/local/"${FREETYPE_VERSION}" && make && make install && ln -s /usr/local/"${FREETYPE_VERSION}"/include/freetype2/freetype/ /usr/local/include/ && ln -s /usr/local/"${FREETYPE_VERSION}"/include/freetype2/ft2build.h /usr/local/include
 
 #install gd
-WORKDIR /"${PHP_VERSION}"/ext/gd
+WORKDIR /root/"${PHP_VERSION}"/ext/gd
 RUN phpize && sh configure --with-freetype-dir=/usr/local/"${FREETYPE_VERSION}" && make && make install && echo "extension=gd.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
 # install php-redis
@@ -50,7 +48,19 @@ RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGOD
 WORKDIR /root/"${MONGODB_VERSION}"
 RUN phpize && sh configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
+
+# install composer
 WORKDIR /root
+RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+
+# install easyswoole
+WORKDIR /mnt
+RUN git clone https://github.com/azerothyang/easyswoole.git
+
+#install composer vendor
+WORKDIR /mnt/easyswoole
+RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com && composer update
+
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
 EXPOSE 9501
