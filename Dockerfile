@@ -63,8 +63,11 @@ RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com
 
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
-EXPOSE 9501
 #将进入目录定位到/mnt
-WORKDIR /mnt
+WORKDIR /mnt/easyswoole
+
+EXPOSE 9501
+
+CMD "php easyswoole start"
 
 #最后通过映射端口： docker run -it -p 80:9501 -v /mnt/es2/:/mnt/ registry.cn-shenzhen.aliyuncs.com/php-docker/php-docker-private php /mnt/bin/easyswoole start
