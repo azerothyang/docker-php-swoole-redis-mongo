@@ -69,6 +69,6 @@ EXPOSE 9501
 
 WORKDIR /mnt/easyswoole
 
-CMD "php easyswoole start"
+CMD php easyswoole start
 
 #最后通过映射端口： docker run -it -p 80:9501 -v /mnt/es2/:/mnt/ registry.cn-shenzhen.aliyuncs.com/php-docker/php-docker-private php /mnt/bin/easyswoole start
