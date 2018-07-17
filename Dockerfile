@@ -54,6 +54,7 @@ WORKDIR /root
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
 
 # install easyswoole
+
 WORKDIR /mnt
 RUN git clone https://github.com/azerothyang/easyswoole.git
 
@@ -64,9 +65,9 @@ RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
 #将进入目录定位到/mnt
-WORKDIR /mnt/easyswoole
-
 EXPOSE 9501
+
+WORKDIR /mnt/easyswoole
 
 CMD "php easyswoole start"
 
