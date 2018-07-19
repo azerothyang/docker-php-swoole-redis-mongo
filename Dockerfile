@@ -5,6 +5,7 @@ ENV REDIS_VERSION redis-3.1.5
 ENV SWOOLE_VERSION swoole-4.0.2
 ENV MONGODB_VERSION mongodb-1.3.4
 ENV FREETYPE_VERSION freetype-2.9
+ENV EASYSWOOLE_DIR /mnt/policy2/microservice/php/es2/
 
 # init
 WORKDIR /root
@@ -48,27 +49,17 @@ RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGOD
 WORKDIR /root/"${MONGODB_VERSION}"
 RUN phpize && sh configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
-
-# install composer
-WORKDIR /root
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
-
-# install easyswoole
-
-WORKDIR /mnt
-RUN git clone https://github.com/azerothyang/easyswoole.git
-
-#install composer vendor
-WORKDIR /mnt/easyswoole
-RUN composer config -g repo.packagist composer https://packagist.phpcomposer.com && composer update
-
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
-#将进入目录定位到/mnt
+#将进入目录定位到/mnt/easyswoole
 EXPOSE 9501
 
+#创建easyswoole目录
 WORKDIR /mnt/easyswoole
+
+#开发完成后, 将开发机器上的文件全部拷贝到容器里的easyswoole目录下,打包成镜像发布
+#COPY EASYSWOOLE_DIR /mnt/easyswoole/
 
 CMD php easyswoole start
 
-#最后通过映射端口： docker run -it -p 80:9501 -v /mnt/es2/:/mnt/ registry.cn-shenzhen.aliyuncs.com/php-docker/php-docker-private php /mnt/bin/easyswoole start
+#最后通过映射端口和挂载volume开发： docker run  -p 80:9501 -v /mnt/es2/:/mnt/easyswoole/ -d registry.xx.com。 
