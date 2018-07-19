@@ -51,10 +51,10 @@ RUN phpize && sh configure && make && make install && echo "extension=mongodb.so
 
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
-#将进入目录定位到/mnt/easyswoole
+#expose port 9501
 EXPOSE 9501
 
-#创建easyswoole目录
+#create easyswoole dir
 WORKDIR /mnt/easyswoole
 
 #开发完成后, 将开发机器上的文件全部拷贝到容器里的easyswoole目录下,打包成镜像发布
