@@ -1,10 +1,11 @@
 ﻿FROM centos
-LABEL maintainer "Yang Cheng"
+LABEL maintainer = "Yang Cheng"
 ENV PHP_VERSION php-7.2.5
 ENV REDIS_VERSION redis-3.1.5
 ENV SWOOLE_VERSION swoole-4.0.2
 ENV MONGODB_VERSION mongodb-1.3.4
 ENV FREETYPE_VERSION freetype-2.9
+# swoole local url for production config
 ENV SWOOLE_LOCAL_DIR /mnt/policy2/microservice/php/es2/
 
 # init
