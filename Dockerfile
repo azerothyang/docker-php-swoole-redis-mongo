@@ -5,7 +5,7 @@ ENV REDIS_VERSION redis-3.1.5
 ENV SWOOLE_VERSION swoole-4.0.2
 ENV MONGODB_VERSION mongodb-1.3.4
 ENV FREETYPE_VERSION freetype-2.9
-ENV EASYSWOOLE_DIR /mnt/policy2/microservice/php/es2/
+ENV SWOOLE_LOCAL_DIR /mnt/policy2/microservice/php/es2/
 
 # init
 WORKDIR /root
@@ -55,11 +55,11 @@ RUN phpize && sh configure && make && make install && echo "extension=mongodb.so
 EXPOSE 9501
 
 #create easyswoole dir
-WORKDIR /mnt/easyswoole
+WORKDIR /mnt/
 
 #开发完成后, 将开发机器上的文件全部拷贝到容器里的easyswoole目录下,打包成镜像发布
-#COPY EASYSWOOLE_DIR /mnt/easyswoole/
+#COPY SWOOLE_LOCAL_DIR /mnt/
 
-CMD php easyswoole start
+ENTRYPOINT php easyswoole start
 
-#最后通过映射端口和挂载volume开发： docker run  -p 80:9501 -v /mnt/es2/:/mnt/easyswoole/ -d registry.xx.com。 
+#最后通过映射端口和挂载volume开发： docker run  -p 80:9501 -v /mnt/swoole/:/mnt/ -d registry.xx.com。 
