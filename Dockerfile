@@ -52,8 +52,8 @@ RUN phpize && sh configure && make && make install && echo "extension=mongodb.so
 
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
-#expose port 9501
-EXPOSE 9501
+#expose port 80
+EXPOSE 80
 
 #create easyswoole dir
 WORKDIR /mnt/
@@ -61,6 +61,6 @@ WORKDIR /mnt/
 #开发完成后, 将开发机器上的文件全部拷贝到容器里的easyswoole目录下,打包成镜像发布
 #COPY SWOOLE_LOCAL_DIR /mnt/
 
-ENTRYPOINT php easyswoole start
+CMD php easyswoole start
 
 #最后通过映射端口和挂载volume开发： docker run  -p 80:9501 -v /mnt/swoole/:/mnt/ -d registry.xx.com。 
