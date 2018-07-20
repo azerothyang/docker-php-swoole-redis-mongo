@@ -1,4 +1,4 @@
-﻿FROM centos
+﻿FROM centos:latest
 LABEL maintainer = "Yang Cheng"
 ENV PHP_VERSION php-7.2.5
 ENV REDIS_VERSION redis-3.1.5
