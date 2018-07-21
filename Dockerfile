@@ -7,6 +7,7 @@ ENV MONGODB_VERSION mongodb-1.3.4
 ENV FREETYPE_VERSION freetype-2.9
 # swoole local url for production config
 ENV SWOOLE_LOCAL_DIR /mnt/policy2/microservice/php/es2/
+ENV INOTIFY_VERSION inotify-2.0.0
 
 # init
 WORKDIR /root
@@ -50,7 +51,7 @@ RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGOD
 WORKDIR /root/"${MONGODB_VERSION}"
 RUN phpize && sh configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
-#install notify
+#install inotify
 WORKDIR /root
 RUN wget http://pecl.php.net/get/"${INOTIFY_VERSION}".tgz
 WORKDIR /root/"${INOTIFY_VERSION}"
