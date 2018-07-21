@@ -50,6 +50,12 @@ RUN wget http://pecl.php.net/get/"${MONGODB_VERSION}".tgz && tar -zxvf "${MONGOD
 WORKDIR /root/"${MONGODB_VERSION}"
 RUN phpize && sh configure && make && make install && echo "extension=mongodb.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
 
+#install notify
+WORKDIR /root
+RUN wget http://pecl.php.net/get/"${INOTIFY_VERSION}".tgz
+WORKDIR /root/"${INOTIFY_VERSION}"
+RUN phpize && sh configure && make && make install && echo "extension=inotify.so" >> /usr/local/"${PHP_VERSION}"/etc/php.ini
+
 # RUN wget http://dev.mysql.com/get/mysql57-community-release-el7-8.noarch.rpm && yum -y localinstall mysql57-community-release-el7-8.noarch.rpm && yum install -y mysql-community-server
 
 #expose port 80
